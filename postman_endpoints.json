@@ -1,0 +1,114 @@
+{
+	"info": {
+		"_postman_id": "792cced3-97fa-4f57-a7c7-5afeec63dcf7",
+		"name": "shipping-task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Shipments",
+			"item": [
+				{
+					"name": "Get Queue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/shipments/queue",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"shipments",
+								"queue"
+							]
+						},
+						"description": "## GET /shipments/queue\n\nGet a list of items that have not yet been fulfilled. (QTY ordered exceeds QTY shipped)\n\nExpected output is an array of order items\n\n``` json\n{\n  part: String,\n  qtyOrdered: Number,\n  qtyShipped: Number,\n}\n\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null,
+						"description": "## GET /shipments/queue\n\nGet a list of every shipment that as been created.\n\nExpected output is an array of shipments."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Shipment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/shipments/queue",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"shipments",
+								"queue"
+							]
+						},
+						"description": "## PUT /shipments\n\nCreate a new shipment with the specified contents.\n\nSample input format:\n\n``` json\n{\n  orderNumber: String,\n  contents: [{\n    part: String,\n    qty: Number\n  }]\n}\n\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Shipment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/shipments/queue",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"shipments",
+								"queue"
+							]
+						},
+						"description": "## PATCH /shipments\n\nEdit the contents of the specified shipment (referenced by its MongoDB id)\n\nSample input format:\n\n``` json\n{\n  id: String,\n  contents: [{\n    part: String,\n    qty: Number,\n  }]\n}\n\n```\n\nIf the specified **id** does not exist, server should respond with status 400."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Shipment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/shipments/queue",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"shipments",
+								"queue"
+							]
+						},
+						"description": "## DELETE /shipments\n\nDelete the specified shipment (referenced by its MongoDB id)\n\nSample input format:\n\n``` json\n{\n  id: String,\n}\n\n```\n\nIf the specified **id** does not exist, server should respond with status 400."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reset",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": null,
+				"description": "## POST /reset\n\nClear any shipments that have been generated and generate new random data."
+			},
+			"response": []
+		}
+	]
+}
