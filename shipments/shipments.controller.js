@@ -30,86 +30,60 @@
  // ---------------------------
  // ---------------------------
  
- async function getShipments(req, res) {
-   ShipmentModel.find({} , (error , allShipments) => {
-     if (error) { 
-       console.log(error)
-       res.sendStatus(400)
-     } else {
-      // console.log(allShipments)
-      res.sendStatus(502);
-      return allShipments
-     }
-   })
+ async function getShipments(req, res){
+   try{
+     let allShipments = await ShipmentModel.find({})
+     console.log(allShipments)
+     res.send(allShipments)
+   } catch (error) {
+     console.log('an error has occured')
+     console.log(error)
+     res.sendStatus(400)
+   }
  }
- 
- async function createShipment(req, res) {
-  ShipmentModel.create(req.body , (error , createdShipment) => {
-    console.log(createdShipment)
-    if (error) {
-      console.log(error)
-      res.sendStatus(400)
-    } else {
-      res.sendStatus(502)
-    }
-  })
- }
- 
- async function editShipment(req, res) {
-  // ***THIS IS IF WE WANT TO HAVE THE ID IN THE URL***
-  //  ShipmentModel.findByIdAndUpdate(req.params.id, req.body, {new: true} , (error , updatedShipment) => {
-  //    console.log(updatedShipment)
-  //    if(error) {
-  //      console.log(error)
-  //    }
-  //  } )
 
-  // ***CURRENTLY THIS IS HOW POSTMAN IS SET UP, I'M NOT SURE WHICH IS A BETTER METHOD***
-  ShipmentModel.findById(req.body._id, (error, foundShipment) => {
-    if (error) {
-      console.log(error)
-      res.sendStatus(400)       //if id isn't valid
-    } else{
-      console.log('this is the found shipment \n' , foundShipment)
-      if (foundShipment.shipped) {        //check that shipment hasn't been shipped
-        console.log('Shipment has already shipped and cannot be edited.')
-        res.sendStatus(403)
-      } else {
-        ShipmentModel.findByIdAndUpdate(req.body._id, req.body.update, {new: true} , (error , updatedShipment) => {
-          if(error) {
-            console.log(error)
-            res.sendStatus(400)
-          } else { 
-            console.log(updatedShipment) 
-            res.sendStatus(502)
-          }
-          })
-      }
-    }
-  })
+ async function createShipment(req, res){
+   try{
+     let createdShipment = await ShipmentModel.create(req.body)
+     console.log(createdShipment)
+     res.sendStatus(200)
+   } catch (error) {
+     console.log(error)
+     res.sendStatus(400)
+   }
+ }
+ 
+ async function editShipment(req, res){
+   try {
+     let foundShipment = await ShipmentModel.findById(req.body._id)
+     if (foundShipment.shipped){
+       console.log('Shipment has already shipped and cannot be edited.')
+       res.send('Shipment has already shipped and cannot be edited.')
+     } else {
+       let updatedShipment = await ShipmentModel.findByIdAndUpdate(req.body._id, req.body.update, {new:true})
+       console.log(updatedShipment)
+       res.sendStatus(200)
+     }
+   } catch (error){
+     console.log(error)
+     res.sendStatus(400)
+   }
  }
  
  async function deleteShipment(req, res) {
-  ShipmentModel.findById(req.body.shipmentId, (error , shipment) => {
-    if(error){
-      console.log('error occured: \n' , error)
-      res.sendStatus(400)
-    } else {
-      if(shipment.shipped) {
-        console.log('Shipment has already been shipped! Cannot delete')
-        res.sendStatus(403)
-      } else {
-        ShipmentModel.findByIdAndRemove(req.body.shipmentId, (error , deletedShipment) => {
-          if (error) {
-            res.sendStatus(400)
-          } else {
-            console.log(deletedShipment)
-            res.sendStatus(200)
-          }
-        })
-      }
-    }
-  })
+   try{
+     let shipment = await ShipmentModel.findById(req.body.shipmentId)
+     if (shipment.shipped){
+      console.log('Shipment has already been shipped! Cannot delete')
+      res.send('Shipment has already shipped and cannot be deleted.')
+     } else {
+       let deletedShipment = await ShipmentModel.findByIdAndRemove(req.body.shipmentId)
+       console.log(deletedShipment)
+       res.sendStatus(200)
+     }
+   } catch (error){
+     console.log(error)
+   }
  }
  
 //****** OLD CODE COMMENTED OUT AND LEFT FOR REFERENCE ******//
@@ -256,7 +230,7 @@
         }
         if (item['shipQty'] !== item['qty']){     //If qtys do not match then append to openOrders array using the format below
           let lineItem = {
-            'orderID': i._id.toString(),
+            // 'orderID': i._id.toString(),       //I don't think this was a requirement 
             'part': item['part'],
             'qtyOrdered': item['qty'],
             'qtyShipped': item['shipQty']
@@ -267,6 +241,7 @@
     }
 
     console.log('open orders sucessfully generated')
+    console.log('Number of open line items: ', openOrders.length)
     res.send(openOrders)
   } catch (error){
     console.log('there has been an error')
